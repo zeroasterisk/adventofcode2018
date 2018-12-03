@@ -1,21 +1,15 @@
 # Fabarea
 
-**TODO: Add description**
-
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `fabarea` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:fabarea, "~> 0.1.0"}
-  ]
-end
+```
+$ mix fabarea_1 './test.txt'
+4
+$ mix fabarea_1 './input.txt'
+104712
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/fabarea](https://hexdocs.pm/fabarea).
-
+```
+$ mix fabarea_2 './test.txt'
+[%Fabarea.Claim{claim_number: 3, skip_x: 5, skip_y: 5, x: 2, y: 2}]
+$ mix fabarea_2 './input.txt'
+[%Fabarea.Claim{claim_number: 840, skip_x: 163, skip_y: 836, x: 21, y: 12}]
+```
