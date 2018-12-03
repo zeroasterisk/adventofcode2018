@@ -175,7 +175,7 @@ defmodule Fabarea do
 
       iex> fabric = Matrix.new(8, 8)
       iex> claim = Fabarea.parse_claim("#1 @ 1,3: 4x4")
-      iex> Fabarea.apply_claim(fabric, claim)
+      iex> Fabarea.apply_claim(claim, fabric)
       [
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
@@ -188,10 +188,8 @@ defmodule Fabarea do
       ]
 
       iex> fabric = Matrix.new(8, 8)
-      iex> claim = Fabarea.parse_claim("#1 @ 1,3: 4x4")
-      iex> fabric = Fabarea.apply_claim(fabric, claim)
-      iex> claim = Fabarea.parse_claim("#2 @ 3,1: 4x4")
-      iex> Fabarea.apply_claim(fabric, claim)
+      iex> fabric = Fabarea.apply_claim("#1 @ 1,3: 4x4", fabric)
+      iex> Fabarea.apply_claim("#2 @ 3,1: 4x4", fabric)
       [
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 1, 1, 1, 1, 0],
@@ -202,14 +200,29 @@ defmodule Fabarea do
         [0, 1, 1, 1, 1, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0]
       ]
+
+      iex> fabric = Matrix.new(8, 8)
+      iex> fabric = Fabarea.apply_claim("#1 @ 1,3: 4x4", fabric)
+      iex> fabric = Fabarea.apply_claim("#2 @ 3,1: 4x4", fabric)
+      iex> Fabarea.apply_claim("#3 @ 5,5: 2x2", fabric)
+      [
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 1, 1, 1, 0],
+        [0, 0, 0, 1, 1, 1, 1, 0],
+        [0, 1, 1, 2, 2, 1, 1, 0],
+        [0, 1, 1, 2, 2, 1, 1, 0],
+        [0, 1, 1, 1, 1, 1, 1, 0],
+        [0, 1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0]
+      ]
   """
-  def apply_claim(fabric, %Fabarea.Claim{} = claim) do
+  def apply_claim(%Fabarea.Claim{} = claim, fabric) do
     patch = claim
             |> Fabarea.Claim.to_matrix()
             |> Fabarea.Claim.size_to_fabric(fabric)
     fabric |> Matrix.add(patch)
   end
-
+  def apply_claim(claim, fabric), do: claim |> Fabarea.parse_claim() |> Fabarea.apply_claim(fabric)
 
   @doc """
   Parse a single claim line from input file into a Struct
