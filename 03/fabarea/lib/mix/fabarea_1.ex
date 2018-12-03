@@ -9,7 +9,6 @@ defmodule Mix.Tasks.Fabarea1 do
     |> List.first()
     |> File.stream!()
     |> Enum.reduce(%{}, &Fabarea.apply_claim/2)
-    # |> IO.inspect()
     |> Map.values() |> Enum.filter(fn(n) -> n > 1 end) |> Enum.count()
     |> IO.inspect()
   end

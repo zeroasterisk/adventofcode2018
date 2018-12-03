@@ -96,16 +96,6 @@ defmodule Fabarea do
         {5, 1} => 1, {5, 2} => 1, {5, 3} => 1, {5, 4} => 1,
         {6, 1} => 1, {6, 2} => 1, {6, 3} => 1, {6, 4} => 1
       }
-      # [
-      #   [0, 0, 0, 0, 0, 0, 0, 0],
-      #   [0, 0, 0, 1, 1, 1, 1, 0],
-      #   [0, 0, 0, 1, 1, 1, 1, 0],
-      #   [0, 1, 1, 2, 2, 1, 1, 0],
-      #   [0, 1, 1, 2, 2, 1, 1, 0],
-      #   [0, 1, 1, 1, 1, 0, 0, 0],
-      #   [0, 1, 1, 1, 1, 0, 0, 0],
-      #   [0, 0, 0, 0, 0, 0, 0, 0]
-      # ]
 
       iex> fabric = %{}
       iex> fabric = Fabarea.apply_claim("#1 @ 1,3: 4x4", fabric)
@@ -121,16 +111,6 @@ defmodule Fabarea do
         {5, 5} => 1, {5, 6} => 1, {6, 1} => 1, {6, 2} => 1,
         {6, 3} => 1, {6, 4} => 1, {6, 5} => 1, {6, 6} => 1
       }
-      # [
-      #   [0, 0, 0, 0, 0, 0, 0, 0],
-      #   [0, 0, 0, 1, 1, 1, 1, 0],
-      #   [0, 0, 0, 1, 1, 1, 1, 0],
-      #   [0, 1, 1, 2, 2, 1, 1, 0],
-      #   [0, 1, 1, 2, 2, 1, 1, 0],
-      #   [0, 1, 1, 1, 1, 1, 1, 0],
-      #   [0, 1, 1, 1, 1, 1, 1, 0],
-      #   [0, 0, 0, 0, 0, 0, 0, 0]
-      # ]
   """
   def apply_claim(%Fabarea.Claim{} = claim, %{} = fabric) do
     claim
@@ -140,10 +120,6 @@ defmodule Fabarea do
   def apply_claim(claim, fabric) when is_bitstring(claim) do
     claim |> Fabarea.parse_claim() |> Fabarea.apply_claim(fabric)
   end
-
-  # def total_fabric_claims_over(fabric,
-
-
 
   @doc """
   Parse a single claim line from input file into a Struct
@@ -165,6 +141,7 @@ defmodule Fabarea do
     }
   end
   # "#" <> claim_number <> " @ " <> skip_x <> "," <> skip_y <> ": " <> x <> "x" <> y) do
+  # TODO could have done w/ REGEX too
   def parse_claim(str) when is_bitstring(str) do
     str
     |> String.trim()
@@ -176,6 +153,5 @@ defmodule Fabarea do
     |> String.split(" ")
     |> Enum.map(&String.to_integer/1)
     |> parse_claim()
-
   end
 end
