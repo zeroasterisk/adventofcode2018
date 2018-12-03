@@ -14,3 +14,10 @@ $ mix deps.get
 $ mix calibrate "./input.txt"
 "595 <-- [./input.txt]"
 ```
+
+Well code changed because the part-b asked for a "first duplicated sum".
+
+```
+$ mix calibrate "./input.txt"
+"80920 [first duplicated sum: 80598] <-- [./input.txt]"
+```
