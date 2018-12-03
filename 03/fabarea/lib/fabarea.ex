@@ -6,159 +6,6 @@ defmodule Fabarea.Claim do
     x: nil,
     y: nil,
   ]
-
-  @doc """
-  Pad the matrix, to the left
-
-  ## Examples
-
-      iex> claim = %Fabarea.Claim{claim_number: 1, skip_x: 1, skip_y: 3, x: 4, y: 4}
-      iex> Fabarea.Claim.to_matrix(claim)
-      [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 1, 1, 1, 1],
-        [0, 1, 1, 1, 1],
-        [0, 1, 1, 1, 1],
-        [0, 1, 1, 1, 1]
-      ]
-  """
-  def to_matrix(%Fabarea.Claim{skip_x: skip_x, skip_y: skip_y, x: x, y: y}) do
-    Matrix.ones(x, y)
-    |> pad_left(skip_x)
-    |> pad_top(skip_y)
-  end
-
-  @doc """
-  Pad the matrix, to the top
-
-  ## Examples
-
-      iex> trix = Matrix.ones(3, 3)
-      iex> Fabarea.Claim.pad_top(trix, 4)
-      [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [1, 1, 1], [1, 1, 1], [1, 1, 1]]
-
-      iex> trix = Matrix.ones(3, 3)
-      iex> Fabarea.Claim.pad_top(trix, 0)
-      [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
-
-  """
-  def pad_top(trix, 0), do: trix
-  def pad_top(trix, n) do
-    {_rows, cols} = Matrix.size(trix)
-    top = Matrix.zeros(n, cols)
-    top ++ trix
-  end
-
-  @doc """
-  Pad the matrix, to the right (this is fast)
-
-  ## Examples
-
-      iex> trix = Matrix.ones(3, 3)
-      iex> Fabarea.Claim.pad_right(trix, 4)
-      [[1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 0, 0, 0, 0]]
-
-      iex> trix = Matrix.ones(3, 3)
-      iex> Fabarea.Claim.pad_right(trix, 0)
-      [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
-
-  """
-  def pad_right(trix, 0), do: trix
-  def pad_right(trix, n) do
-    padding = Matrix.new(1, n) |> List.first()
-    trix
-    |> Enum.map(fn(r) -> r ++ padding end)
-  end
-
-  @doc """
-  Pad the matrix, to the bottom
-
-  ## Examples
-
-      iex> trix = Matrix.ones(3, 3)
-      iex> Fabarea.Claim.pad_bottom(trix, 4)
-      [[1, 1, 1], [1, 1, 1], [1, 1, 1], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-
-      iex> trix = Matrix.ones(3, 3)
-      iex> Fabarea.Claim.pad_bottom(trix, 0)
-      [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
-
-  """
-  def pad_bottom(trix, 0), do: trix
-  def pad_bottom(trix, n) do
-    {_rows, cols} = Matrix.size(trix)
-    bottom = Matrix.zeros(n, cols)
-    trix ++ bottom
-  end
-
-  @doc """
-  Pad the matrix, to the left (this is fast)
-
-  ## Examples
-
-      iex> trix = Matrix.ones(3, 3)
-      iex> Fabarea.Claim.pad_left(trix, 4)
-      [[0, 0, 0, 0, 1, 1, 1], [0, 0, 0, 0, 1, 1, 1], [0, 0, 0, 0, 1, 1, 1]]
-
-      iex> trix = Matrix.ones(3, 3)
-      iex> Fabarea.Claim.pad_left(trix, 0)
-      [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
-
-  """
-  def pad_left(trix, 0), do: trix
-  def pad_left(trix, n) do
-    trix
-    |> Enum.map(fn(r) -> [0 | r] end)
-    # |> Matrix.prefix_rows(0)
-    |> pad_left(n - 1)
-  end
-
-
-  @doc """
-  Expand the matrix, to the size of the fabric
-
-  ## Examples
-
-      iex> fabric = Matrix.zeros(8, 8)
-      iex> claim = %Fabarea.Claim{claim_number: 1, skip_x: 1, skip_y: 3, x: 4, y: 4}
-      iex> Fabarea.Claim.size_to_fabric(claim, fabric)
-      [
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0]
-      ]
-
-      iex> fabric = Matrix.zeros(7, 7)
-      iex> claim = %Fabarea.Claim{claim_number: 1, skip_x: 1, skip_y: 3, x: 4, y: 4}
-      iex> Fabarea.Claim.size_to_fabric(claim, fabric)
-      [
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0],
-      ]
-
-  """
-  def size_to_fabric(%Fabarea.Claim{} = claim, fabric) do
-    claim |> Fabarea.Claim.to_matrix() |> Fabarea.Claim.size_to_fabric(fabric)
-  end
-  def size_to_fabric(trix, fabric) do
-    {to_rows, to_cols} = Matrix.size(fabric)
-    {is_rows, is_cols} = Matrix.size(trix)
-    grow_x = max(0, to_cols - is_cols)
-    grow_y = max(0, to_rows - is_rows)
-    trix |> pad_right(grow_x) |> pad_bottom(grow_y)
-  end
 end
 
 
@@ -167,62 +14,136 @@ defmodule Fabarea do
   Documentation for Fabarea.
   """
 
+  @doc """
+  Increment a single node in a map with {x, y} keys
+
+  ## Examples
+
+      iex> fabric = %{}
+      iex> Fabarea.increment({2, 3}, fabric)
+      %{{2, 3} => 1}
+
+      iex> fabric = Fabarea.increment({2, 3}, %{})
+      iex> fabric = Fabarea.increment({2, 3}, fabric)
+      iex> Fabarea.increment({3, 3}, fabric)
+      %{{2, 3} => 2, {3, 3} => 1}
+  """
+  def increment({x, y}, fabric) do
+    Fabarea.increment({x, y}, fabric, Map.get(fabric, {x, y}))
+  end
+  def increment({x, y}, fabric, nil) do
+    Map.put(fabric, {x, y}, 1)
+  end
+  def increment({x, y}, fabric, value) do
+    Map.put(fabric, {x, y}, value + 1)
+  end
+
+  @doc """
+  Convert a claim into {x, y} coords
+  #
+  ## Examples
+
+      iex> claim = Fabarea.parse_claim("#1 @ 0,0: 4x4")
+      iex> Fabarea.claim_coords(claim)
+      [
+        {0, 0}, {1, 0}, {2, 0}, {3, 0},
+        {0, 1}, {1, 1}, {2, 1}, {3, 1},
+        {0, 2}, {1, 2}, {2, 2}, {3, 2},
+        {0, 3}, {1, 3}, {2, 3}, {3, 3}
+      ]
+
+      iex> claim = Fabarea.parse_claim("#123 @ 3,2: 5x4")
+      iex> Fabarea.claim_coords(claim)
+      [
+        {3, 2}, {4, 2}, {5, 2}, {6, 2}, {7, 2},
+        {3, 3}, {4, 3}, {5, 3}, {6, 3}, {7, 3},
+        {3, 4}, {4, 4}, {5, 4}, {6, 4}, {7, 4},
+        {3, 5}, {4, 5}, {5, 5}, {6, 5}, {7, 5}
+      ]
+  """
+  def claim_coords(%Fabarea.Claim{skip_x: skip_x, skip_y: skip_y, x: x, y: y}) do
+    range_x = Range.new(skip_x, skip_x + x - 1)
+    range_y = Range.new(skip_y, skip_y + y - 1)
+    for y <- range_y, x <- range_x do
+      {x, y}
+    end
+  end
 
   @doc """
   Apply a single claim line onto the fabric
 
   ## Examples
 
-      iex> fabric = Matrix.new(8, 8)
+      iex> fabric = %{}
       iex> claim = Fabarea.parse_claim("#1 @ 1,3: 4x4")
       iex> Fabarea.apply_claim(claim, fabric)
-      [
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0]
-      ]
+      %{
+        {1, 3} => 1, {1, 4} => 1, {1, 5} => 1, {1, 6} => 1,
+        {2, 3} => 1, {2, 4} => 1, {2, 5} => 1, {2, 6} => 1,
+        {3, 3} => 1, {3, 4} => 1, {3, 5} => 1, {3, 6} => 1,
+        {4, 3} => 1, {4, 4} => 1, {4, 5} => 1, {4, 6} => 1
+      }
 
-      iex> fabric = Matrix.new(8, 8)
+      iex> fabric = %{}
       iex> fabric = Fabarea.apply_claim("#1 @ 1,3: 4x4", fabric)
       iex> Fabarea.apply_claim("#2 @ 3,1: 4x4", fabric)
-      [
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 1, 1, 1, 1, 0],
-        [0, 0, 0, 1, 1, 1, 1, 0],
-        [0, 1, 1, 2, 2, 1, 1, 0],
-        [0, 1, 1, 2, 2, 1, 1, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0]
-      ]
+      %{
+        {1, 3} => 1, {1, 4} => 1, {1, 5} => 1, {1, 6} => 1,
+        {2, 3} => 1, {2, 4} => 1, {2, 5} => 1, {2, 6} => 1,
+        {3, 5} => 1, {3, 6} => 1, {4, 5} => 1, {4, 6} => 1,
+        {3, 3} => 2, {3, 4} => 2, {4, 3} => 2, {4, 4} => 2,
+        {3, 1} => 1, {3, 2} => 1, {4, 1} => 1, {4, 2} => 1,
+        {5, 1} => 1, {5, 2} => 1, {5, 3} => 1, {5, 4} => 1,
+        {6, 1} => 1, {6, 2} => 1, {6, 3} => 1, {6, 4} => 1
+      }
+      # [
+      #   [0, 0, 0, 0, 0, 0, 0, 0],
+      #   [0, 0, 0, 1, 1, 1, 1, 0],
+      #   [0, 0, 0, 1, 1, 1, 1, 0],
+      #   [0, 1, 1, 2, 2, 1, 1, 0],
+      #   [0, 1, 1, 2, 2, 1, 1, 0],
+      #   [0, 1, 1, 1, 1, 0, 0, 0],
+      #   [0, 1, 1, 1, 1, 0, 0, 0],
+      #   [0, 0, 0, 0, 0, 0, 0, 0]
+      # ]
 
-      iex> fabric = Matrix.new(8, 8)
+      iex> fabric = %{}
       iex> fabric = Fabarea.apply_claim("#1 @ 1,3: 4x4", fabric)
       iex> fabric = Fabarea.apply_claim("#2 @ 3,1: 4x4", fabric)
       iex> Fabarea.apply_claim("#3 @ 5,5: 2x2", fabric)
-      [
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 1, 1, 1, 1, 0],
-        [0, 0, 0, 1, 1, 1, 1, 0],
-        [0, 1, 1, 2, 2, 1, 1, 0],
-        [0, 1, 1, 2, 2, 1, 1, 0],
-        [0, 1, 1, 1, 1, 1, 1, 0],
-        [0, 1, 1, 1, 1, 1, 1, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0]
-      ]
+      %{
+        {1, 3} => 1, {1, 4} => 1, {1, 5} => 1, {1, 6} => 1,
+        {2, 3} => 1, {2, 4} => 1, {2, 5} => 1, {2, 6} => 1,
+        {3, 1} => 1, {3, 2} => 1, {3, 3} => 2, {3, 4} => 2,
+        {3, 5} => 1, {3, 6} => 1, {4, 1} => 1, {4, 2} => 1,
+        {4, 3} => 2, {4, 4} => 2, {4, 5} => 1, {4, 6} => 1,
+        {5, 1} => 1, {5, 2} => 1, {5, 3} => 1, {5, 4} => 1,
+        {5, 5} => 1, {5, 6} => 1, {6, 1} => 1, {6, 2} => 1,
+        {6, 3} => 1, {6, 4} => 1, {6, 5} => 1, {6, 6} => 1
+      }
+      # [
+      #   [0, 0, 0, 0, 0, 0, 0, 0],
+      #   [0, 0, 0, 1, 1, 1, 1, 0],
+      #   [0, 0, 0, 1, 1, 1, 1, 0],
+      #   [0, 1, 1, 2, 2, 1, 1, 0],
+      #   [0, 1, 1, 2, 2, 1, 1, 0],
+      #   [0, 1, 1, 1, 1, 1, 1, 0],
+      #   [0, 1, 1, 1, 1, 1, 1, 0],
+      #   [0, 0, 0, 0, 0, 0, 0, 0]
+      # ]
   """
-  def apply_claim(%Fabarea.Claim{} = claim, fabric) do
-    patch = claim
-            |> Fabarea.Claim.to_matrix()
-            |> Fabarea.Claim.size_to_fabric(fabric)
-    fabric |> Matrix.add(patch)
+  def apply_claim(%Fabarea.Claim{} = claim, %{} = fabric) do
+    claim
+    |> Fabarea.claim_coords()
+    |> Enum.reduce(fabric, &Fabarea.increment/2)
   end
-  def apply_claim(claim, fabric), do: claim |> Fabarea.parse_claim() |> Fabarea.apply_claim(fabric)
+  def apply_claim(claim, fabric) when is_bitstring(claim) do
+    claim |> Fabarea.parse_claim() |> Fabarea.apply_claim(fabric)
+  end
+
+  # def total_fabric_claims_over(fabric,
+
+
 
   @doc """
   Parse a single claim line from input file into a Struct
@@ -233,6 +154,7 @@ defmodule Fabarea do
       %Fabarea.Claim{claim_number: 1, skip_x: 1, skip_y: 3, x: 4, y: 4}
 
   """
+  def parse_claim(%Fabarea.Claim{} = claim), do: claim
   def parse_claim([claim_number, skip_x, skip_y, x, y]) do
     %Fabarea.Claim{
       claim_number: claim_number,
@@ -243,7 +165,7 @@ defmodule Fabarea do
     }
   end
   # "#" <> claim_number <> " @ " <> skip_x <> "," <> skip_y <> ": " <> x <> "x" <> y) do
-  def parse_claim(str) do
+  def parse_claim(str) when is_bitstring(str) do
     str
     |> String.trim()
     |> String.replace("#", "")
