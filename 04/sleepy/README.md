@@ -1,21 +1,23 @@
 # Sleepy
 
-**TODO: Add description**
+```
+$ mix sleepy_1 test.txt
+Guard 10 was most asleep in min 24 with product 240
 
-## Installation
+$ mix sleepy_1 sorted.txt
+Guard 3323 was most asleep in min 33 with product 109659
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `sleepy` to your list of dependencies in `mix.exs`:
+$ mix sleepy_2 sorted.txt
+Guard 983 was most asleep in min 37 with product 36371
 
-```elixir
-def deps do
-  [
-    {:sleepy, "~> 0.1.0"}
-  ]
-end
+$ mix sleepy_2 test.txt
+Guard 99 was most asleep in min 45 with product 4455
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/sleepy](https://hexdocs.pm/sleepy).
+I scored points today!!! (Elixir FTW!)
 
+1. Your puzzle answer was 109659.
+2. Your puzzle answer was 36371.
+
+The 1st challenge I will likely never get, but the 2nd is possibly attainable,
+because elixir makes iteration/refactor so easy.
