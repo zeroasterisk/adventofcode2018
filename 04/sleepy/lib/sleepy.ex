@@ -150,6 +150,8 @@ defmodule Sleepy do
       guards: guards |> Map.put_new(id, guard),
     })
   end
+  # skip if we get time before a guard id
+  def apply_log_line(%TimeLog{}, %Guards{current_id: nil} = guards_acc), do: guards_acc
   def apply_log_line(%TimeLog{} = log, %Guards{current_id: id, guards: guards} = guards_acc) do
     guard = guards |> Map.get(id)
     sleep_log = guard |> Map.get(:sleep_log)
@@ -176,7 +178,7 @@ defmodule Sleepy do
   """
   def parse(str) when is_bitstring(str) do
     date = str |> parse_date()
-    guard = ~r/ Guard #(?<id>[0-9]{2})/ |> Regex.named_captures(str)
+    guard = ~r/ Guard #(?<id>[0-9]+)/ |> Regex.named_captures(str)
     cond do
       is_map(guard) ->
         %Guard{
