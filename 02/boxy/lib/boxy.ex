@@ -42,4 +42,57 @@ defmodule Boxy do
   def has_freq_count?(%{} = f, n) do
     f |> Map.values() |> Enum.member?(n)
   end
+
+  @doc """
+  compare 2 strings, and allow no more than 1 char difference between the two
+
+  ## Examples
+
+      iex> Boxy.compare_id("fghij", %{last: "fguij", found: nil})
+      %{found: "fgij", last: "fghij"}
+
+      iex> Boxy.compare_id("abcdef", %{last: "fguij", found: nil})
+      %{found: nil, last: "abcdef"}
+
+      iex> Boxy.compare_id("abcdef", %{last: "aaaa", found: "aaaa"})
+      %{last: "aaaa", found: "aaaa"}
+
+  """
+  def compare_id(str, %{last: nil, found: nil}) do
+    %{last: str, found: nil}
+  end
+  def compare_id(str, %{last: last, found: nil} = acc) do
+    diff = String.myers_difference(str, last)
+    case is_compare_id_good?(diff) do
+      true ->
+        found = diff
+                |> Enum.filter(fn({k, _}) -> k === :eq end)
+                |> Keyword.values()
+                |> Enum.join()
+        acc |> Map.merge(%{last: str, found: found})
+      false ->
+        acc |> Map.merge(%{last: str, found: nil})
+    end
+  end
+  def compare_id(_str, %{found: _found} = acc), do: acc
+
+  @doc """
+  Is within 1 char?
+
+  ## Examples
+
+      iex> Boxy.is_compare_id_good?(String.myers_difference("fghij", "fguij"))
+      true
+
+      iex> Boxy.is_compare_id_good?(String.myers_difference("abcdef", "fguij"))
+      false
+  """
+  def is_compare_id_good?(diff) do
+    diff = diff |> Enum.filter(fn({k, _}) -> k !== :eq end)
+    [
+      diff |> Enum.count() == 2,
+      diff |> Keyword.keys() |> Enum.sort() == [:del, :ins],
+      diff |> Keyword.values() |> Enum.map(&String.length/1) == [1, 1],
+    ] |> Enum.all?()
+  end
 end
