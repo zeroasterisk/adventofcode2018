@@ -9,7 +9,8 @@ defmodule Guard do
     id: nil,
     sleep_log: [],
     sleep_mins: %{}, # Map when calculated from log
-    total_asleep: 0
+    total_asleep: 0,
+    highest_min: {0, 0}, # min, count
   ]
 end
 defmodule TimeLog do
@@ -46,12 +47,14 @@ defmodule Sleepy do
       15 => 1, 16 => 1, 17 => 1, 18 => 1, 19 => 1, 20 => 1, 21 => 1, 22 => 1, 23 => 1, 24 => 1
     },
     total_asleep: 20,
+    highest_min: {24, 1}
   }
   """
   def calc_guard(%Guard{sleep_log: sleep_log} = guard) do
     sleep_mins = sleep_log |> Enum.reverse() |> Enum.reduce(%{}, &Sleepy.calculate_mins/2)
     total_asleep = sleep_mins |> Map.values() |> Enum.sum()
-    guard |> Map.merge(%{sleep_mins: sleep_mins, total_asleep: total_asleep})
+    highest_min = sleep_mins |> Enum.sort_by(fn({min, count}) -> count end) |> List.last()
+    guard |> Map.merge(%{sleep_mins: sleep_mins, total_asleep: total_asleep, highest_min: highest_min})
   end
 
 
