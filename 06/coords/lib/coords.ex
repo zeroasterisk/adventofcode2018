@@ -8,6 +8,7 @@ defmodule Point do
     type: :grid, # :origin
     id: nil, # origin id, either for an origin point, or for nearest calculated origin
     dist: 0, # dist to nearest point
+    dist_to_all_origins: 0 # part 2
   ]
 end
 defmodule Group do
@@ -83,18 +84,20 @@ defmodule Coords do
   def dist(%Point{x: x1, y: y1}, %Point{x: x2, y: y2}) do
     abs(x2 - x1) + abs(y2 - y1)
   end
-  def dist_origins(%Point{} = a) do
-    @origins
-    |> Enum.map(fn(o) -> {o, dist(o, a)} end)
-    |> Enum.sort_by(fn({_o, d}) -> d end)
-  end
   def assign_origin(%Point{} = a) do
-    sorted = dist_origins(a)
+    sorted = @origins
+             |> Enum.map(fn(o) -> {o, dist(o, a)} end)
+             |> Enum.sort_by(fn({_o, d}) -> d end)
+
+    dist_all = sorted |> Enum.map(fn({_o, d}) -> d end) |> Enum.sum()
+    a = a |> Map.merge(%{dist_to_all_origins: dist_all})
+
     {first, sorted} = sorted |> List.pop_at(0)
     {second, _rest} = sorted |> List.pop_at(0)
-    assign_origin(a, first, second)
+
+    assign_origin_near(a, first, second)
   end
-  def assign_origin(%Point{} = a, {o1, d1}, {_o2, d2}) do
+  def assign_origin_near(%Point{} = a, {o1, d1}, {_o2, d2}) do
     case d1 == d2 do
       true -> a |> Map.merge(%{id: :none, dist: d1})
       false -> a |> Map.merge(%{id: o1.id, dist: d1})
@@ -109,45 +112,8 @@ defmodule Coords do
 
   ## Examples
 
-      iex> Coords.grid(5)
-      [
-        %Point{dist: 177, id: :o83_94, type: :grid, x: 0, y: 0},
-        %Point{dist: 176, id: :o83_94, type: :grid, x: 0, y: 1},
-        %Point{dist: 175, id: :o83_94, type: :grid, x: 0, y: 2},
-        %Point{dist: 174, id: :o83_94, type: :grid, x: 0, y: 3},
-        %Point{dist: 173, id: :o83_94, type: :grid, x: 0, y: 4},
-        %Point{dist: 172, id: :o83_94, type: :grid, x: 0, y: 5},
-        %Point{dist: 176, id: :o83_94, type: :grid, x: 1, y: 0},
-        %Point{dist: 175, id: :o83_94, type: :grid, x: 1, y: 1},
-        %Point{dist: 174, id: :o83_94, type: :grid, x: 1, y: 2},
-        %Point{dist: 173, id: :o83_94, type: :grid, x: 1, y: 3},
-        %Point{dist: 172, id: :o83_94, type: :grid, x: 1, y: 4},
-        %Point{dist: 171, id: :o83_94, type: :grid, x: 1, y: 5},
-        %Point{dist: 175, id: :o83_94, type: :grid, x: 2, y: 0},
-        %Point{dist: 174, id: :o83_94, type: :grid, x: 2, y: 1},
-        %Point{dist: 173, id: :o83_94, type: :grid, x: 2, y: 2},
-        %Point{dist: 172, id: :o83_94, type: :grid, x: 2, y: 3},
-        %Point{dist: 171, id: :o83_94, type: :grid, x: 2, y: 4},
-        %Point{dist: 170, id: :o83_94, type: :grid, x: 2, y: 5},
-        %Point{dist: 174, id: :o83_94, type: :grid, x: 3, y: 0},
-        %Point{dist: 173, id: :o83_94, type: :grid, x: 3, y: 1},
-        %Point{dist: 172, id: :o83_94, type: :grid, x: 3, y: 2},
-        %Point{dist: 171, id: :o83_94, type: :grid, x: 3, y: 3},
-        %Point{dist: 170, id: :o83_94, type: :grid, x: 3, y: 4},
-        %Point{dist: 169, id: :o83_94, type: :grid, x: 3, y: 5},
-        %Point{dist: 173, id: :o83_94, type: :grid, x: 4, y: 0},
-        %Point{dist: 172, id: :o83_94, type: :grid, x: 4, y: 1},
-        %Point{dist: 171, id: :o83_94, type: :grid, x: 4, y: 2},
-        %Point{dist: 170, id: :o83_94, type: :grid, x: 4, y: 3},
-        %Point{dist: 169, id: :o83_94, type: :grid, x: 4, y: 4},
-        %Point{dist: 168, id: :o83_94, type: :grid, x: 4, y: 5},
-        %Point{dist: 172, id: :o83_94, type: :grid, x: 5, y: 0},
-        %Point{dist: 171, id: :o83_94, type: :grid, x: 5, y: 1},
-        %Point{dist: 170, id: :o83_94, type: :grid, x: 5, y: 2},
-        %Point{dist: 169, id: :o83_94, type: :grid, x: 5, y: 3},
-        %Point{dist: 168, id: :o83_94, type: :grid, x: 5, y: 4},
-        %Point{dist: 167, id: :o83_94, type: :grid, x: 5, y: 5}
-      ]
+      iex> Coords.grid(5) |> List.last()
+      %Point{dist: 167, id: :o83_94, type: :grid, x: 5, y: 5, dist_to_all_origins: 20436}
 
   """
   def grid(max \\ 500) do
@@ -203,5 +169,27 @@ defmodule Coords do
             |> Map.merge(%{edge: true})
     acc |> Map.put(id, group)
   end
+
+
+
+
+  @doc """
+  calculate the answer to part 2
+
+  ## Examples
+
+      iex> Coords.p2(500)
+      40376
+
+  """
+  def p2(max \\ 500) do
+    max
+    |> grid()
+    # exclude far away nodes
+    |> Enum.filter(fn(%Point{dist_to_all_origins: d}) -> d < 10_000 end)
+    # count
+    |> Enum.count()
+  end
+
 
 end
