@@ -147,6 +147,17 @@ defmodule Puzz.Helper do
   def letters, do: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
 "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 
+  def letter_indexs() do
+    letters = Puzz.Helper.letters |> Enum.map(&String.upcase/1)
+    for i <- Range.new(1, Enum.count(letters)) do
+      {Enum.at(letters, i - 1), i }
+    end
+    |> Map.new()
+  end
+  def letter_index(l) do
+    letter_indexs() |> Map.get(l)
+  end
+
   @doc """
   convert a string to a freq count per letter
 
