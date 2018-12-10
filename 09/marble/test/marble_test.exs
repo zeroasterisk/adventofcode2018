@@ -1,5 +1,6 @@
 defmodule MarbleTest do
   use ExUnit.Case
+  doctest MarbleGraph
   doctest Marble
   doctest Marble.Helper
 

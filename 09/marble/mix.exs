@@ -5,6 +5,7 @@ defmodule Marble.Mixfile do
   @deps    [
     {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
     {:mix_test_watch, "~> 0.9", only: :dev, runtime: false},
+    {:libgraph, "~> 0.13"},
     # {:timex, "~> 3.1"},
   ]
 

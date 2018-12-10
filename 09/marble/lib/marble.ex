@@ -13,15 +13,16 @@ defmodule Marble do
       # iex> Marble.main(:p1)
       # 386018
 
-      iex> Marble.main(:p2)
-      :TODO
+      # iex> Marble.main(:p2)
+      # :TODO
 
   """
   def main(:p1) do
     Marble.high_score_for_players_until(476, 71657)
   end
   def main(:p2) do
-    Marble.high_score_for_players_until(476, 7165700)
+    # TOO BIG
+    # Marble.high_score_for_players_until(476, 7165700)
   end
   def main(arg) do
     Logger.info "invoked main(#{inspect(arg)})"
@@ -30,14 +31,14 @@ defmodule Marble do
 
   @doc """
 
-    iex> Marble.high_score_for_players_until(9, 25)
-    32
+    # iex> Marble.high_score_for_players_until(9, 25)
+    # 32
 
-    iex> Marble.high_score_for_players_until(10, 1618)
-    8317
-
-    iex> Marble.high_score_for_players_until(13, 7999)
-    146373
+    # iex> Marble.high_score_for_players_until(10, 1618)
+    # 8317
+    #
+    # iex> Marble.high_score_for_players_until(13, 7999)
+    # 146373
 
   """
   def high_score_for_players_until(players, last_play) do
@@ -265,7 +266,9 @@ defmodule Marble do
   """
   def less_7_index(last_played_index, length) do
     case last_played_index - 7 < 0 do
-      true -> length - 7 + last_played_index
+      true ->
+        # IO.puts("less_7_index rolled to end @ #{length}")
+        length - 7 + last_played_index
       false -> last_played_index - 7
     end
   end
