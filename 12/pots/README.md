@@ -1,11 +1,39 @@
 # Pots
 
-**TODO: Add description**
+I am super annoyed at this one.
 
+I don't know why, but my `sum_plants()` function works fine on the test strings,
+but it doesn't work for the longer ones, no matter what I do to it.
+
+After fighting several times with it, I used someone's python solution from reddit and found that the "correct" sum was 4 away from what I was calculating:
+
+
+```elixir
+# should be:
+
+iex> Pots.sum_plants("............................##.##.##.#..##.#......#...#..#.#..##.#..##.#..##.#.....#...#..#.#..##.#..##.#..##.#...#..#..##.#..##.#..##.#..##.#..##.#......", -31)
+3059
+
+
+# I got
+
+iex> Pots.sum_plants("............................##.##.##.#..##.#......#...#..#.#..##.#..##.#..##.#.....#...#..#.#..##.#..##.#..##.#...#..#..##.#..##.#..##.#..##.#..##.#......", -31)
+3055
+```
+
+I still don't know how or why, and would like to fix it.
+
+Otherwise, this was a fun one and very much like a "game of life" with the same (simpler) patterns emerging.
 
 ## Usage
 
-**TODO: Add usage**
+```
+mix deps.get
+iex -S mix
+
+iex> Pots.main :p1
+iex> Pots.main :p2
+```
 
 
 ## Installation
